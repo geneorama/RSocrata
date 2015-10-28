@@ -37,8 +37,9 @@ Deprecated ```httr::guess_media()``` and implemented ```mime::guess_type()```
 * Add continuous integration for Windows ([#39](https://github.com/Chicago/RSocrata/issues/39))
 * Migrate Travis-CI to "proper" R YAML ([#46](https://github.com/Chicago/RSocrata/issues/46))
 
+### 1.6.3 Bug fixes:
 
-
+* Resolved [time-out issues when downloading data](https://github.com/Chicago/RSocrata/issues/62).
 
 
 
