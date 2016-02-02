@@ -48,6 +48,9 @@ Bug fixes:
 * Converts a Socrata money field into a proper numeric field, instead of a factor.
 * Updated build method for Travis to test using the current CRAN packages, not beta packages from GitHub.
 
+### 1.7.1 Bug fixes:
+
+* Undo a "work around" needed due to `httr` [bug](https://github.com/hadley/httr/issues/329) and can now directly parse CSV data thanks to a [recent fix](https://github.com/hadley/httr/pull/331).
 
 
 
