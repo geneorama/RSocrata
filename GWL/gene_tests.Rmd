@@ -1,0 +1,504 @@
+
+
+```{r}
+##------------------------------------------------------------------------------
+## LOAD LIBRARIES
+##------------------------------------------------------------------------------
+
+## Pick an RSocrata...
+# geneorama::loadinstall_libraries("RSocrata")
+# devtools::install_github("chicago/RSocrata")
+
+library("RSocrata")
+```
+
+```{r}
+
+if(FALSE){
+    
+    #library(httr)
+    
+    geneorama::lll()
+    rm(list=ls())
+    geneorama::sourceDir("R/")
+    
+    url = "http://soda.demo.socrata.com/resource/4334-bgaj.json?$limit=10"
+    url = "http://soda.demo.socrata.com/resource/4334-bgaj.json"
+    url = "http://soda.demo.socrata.com/resource/4334-bgaj.csv"
+    url = "https://soda.demo.socrata.com/dataset/USGS-Earthquakes-for-2012-11-01-API-School-Demo/4334-bgaj"
+    url = "https://soda.demo.socrata.com/dataset/USGS-Earthquakes-for-2012-11-01-API-School-Demo/4334-bgaj.json"
+    url = "https://data.cityofchicago.org/resource/r5kz-chrr.csv?application_type=RENEW&$limit=20&license_description=Limited Business License"
+    url = "https://data.cityofchicago.org/resource/r5kz-chrr.csv?application_type=RENEW&$limit=20&license_description=Limited Business License&application_created_date<'2010-07-01'"
+    url = "https://data.cityofchicago.org/resource/r5kz-chrr.json?application_type=RENEW&$limit=20&license_description=Limited Business License$where=application_date>'2013-07-01'"
+    url = "https://data.cityofchicago.org/resource/r5kz-chrr.csv?application_type=RENEW&$limit=20&license_description=Limited Business License$where=APPLICATION CREATED DATE>'2013-07-01'"
+    url = "https://data.cityofchicago.org/resource/r5kz-chrr.csv?application_type=RENEW&license_description=Limited Business License"
+    url = "https://data.cityofchicago.org/resource/r5kz-chrr.json?application_type=RENEW&license_description=Limited Business License"
+    url = "https://data.fortworthtexas.gov/resource/i85s-46fv.json?$where=codate<='2001-07-27'"
+    url = "https://data.fortworthtexas.gov/resource/i85s-46fv.csv?$where=codate<='2001-07-27'"
+    url = "https://data.fortworthtexas.gov/resource/i85s-46fv.json?$where=codate >= '2014-07-01' AND codate < '2014-07-31'"
+    
+    # rm(url)
+    hostname = "data.cityofchicago.org"
+    hostname = "http://data.cityofchicago.org"
+    hostname = "https://data.cityofchicago.org"
+    hostname = "banannas://data.cityofchicago.org"
+    
+    query = list(`$limit` = "10", application_type = "RENEW")
+    query = '$limit=10&application_type=RENEW'
+    query = '$limit=10&application_type=RENEW'
+    query = '?application_type=RENEW'
+    query = "?application_type=RENEW&license_description=Limited Business License"
+    
+    resourcePath = "resource/r5kz-chrr"
+    resourcePath = "resource/r5kz-chrr.csv"
+    resourcePath = "resource/r5kz-chrr.json"
+    resourcePath = "banannas/r5kz-chrr.csv"
+    resourcePath = "resource/r5kz-chrr.banannas"
+    
+    ## smaller
+    resourcePath = "resource/kn9c-c2s2"
+    resourcePath = "resource/kn9c-c2s2.csv"
+    resourcePath = "resource/kn9c-c2s2.json"
+    resourcePath = "banannas/kn9c-c2s2.csv"
+    
+    ##
+    apptoken = "bjp8KrRvAPtuf809u1UXnI0Z8"
+    
+    # test <- jsonlite::fromJSON("https://data.cityofchicago.org/resource/r5kz-chrr.json?application_type=RENEW&%24%24app_token=bjp8KrRvAPtuf809u1UXnI0Z8&$limit=50000&$order=id")
+    # str(test)
+    # https://data.cityofchicago.org/resource/r5kz-chrr.json?application_type=RENEW&%24%24app_token=bjp8KrRvAPtuf809u1UXnI0Z8&$limit=50000&$order=id
+    pagesize = 50000
+    keyfield = NULL
+    
+}
+
+```
+
+
+```{r}
+##------------------------------------------------------------------------------
+## EXAMPLES WITH EARTHQUAKES
+##------------------------------------------------------------------------------
+urls <- list("http://soda.demo.socrata.com/resource/4334-bgaj.json?$limit=10",
+             "http://soda.demo.socrata.com/resource/4334-bgaj.json",
+             "http://soda.demo.socrata.com/resource/4334-bgaj.csv",
+             "https://soda.demo.socrata.com/dataset/USGS-Earthquakes-for-2012-11-01-API-School-Demo/4334-bgaj",
+             "https://soda.demo.socrata.com/dataset/USGS-Earthquakes-for-2012-11-01-API-School-Demo/4334-bgaj.json")
+
+if(FALSE){
+    unlist(urls)
+    ## Limit has no effect
+    str(read.socrata(urls[[1]]))
+    ## Works
+    str(read.socrata(urls[[2]]))
+    str(read.socrata(urls[[3]]))
+    str(read.socrata(urls[[4]]))
+    str(read.socrata(urls[[5]]))
+
+    ## Columns are in random order if using json
+    head(read.socrata("http://soda.demo.socrata.com/resource/4334-bgaj.json"))
+    head(read.socrata("http://soda.demo.socrata.com/resource/4334-bgaj.csv"))
+    
+    ## Here CSV is faster
+    system.time(read.socrata("http://soda.demo.socrata.com/resource/4334-bgaj.json"))
+    system.time(read.socrata("http://soda.demo.socrata.com/resource/4334-bgaj.csv"))
+}
+```
+
+
+
+```{r}
+##------------------------------------------------------------------------------
+## FOOD INSPECTION DATA
+##------------------------------------------------------------------------------
+
+## Better grab a good book....
+
+# Results of last INCOMPLETE test on Gene's laptop:
+# Timing stopped at: 65.95 1.86 249.47 
+
+if(FALSE){
+    ## (The limit doesn't work )
+    system.time(test <- read.socrata("http://data.cityofchicago.org/resource/4ijn-s7e5.json?$limit=100"))
+    str(test)
+    system.time(test <- read.socrata("http://data.cityofchicago.org/resource/4ijn-s7e5.json?"))
+    str(test)
+}
+
+```
+
+
+
+
+```{r}
+##------------------------------------------------------------------------------
+## FI MODEL DATA
+##------------------------------------------------------------------------------
+# multicore = TRUE / FALSE
+# apptoken = "NCxdKMXKT2fPVvmZQnCdziPel" ## previous token (city acct?)
+# apptoken = "7nZ6I1o4oRbtROtqw4us2e6KN" ## Token from March 2015
+# useaskey = "inspection_id"
+# rowlimit = 25000
+# base_url = "http://data.cityofchicago.org/resource/"
+# where_query = NULL
+# where_query = 'primary_type="BURGLARY"'
+# 
+# db = "r5kz-chrr"; outdir = "test-bus_license" ; useaskey = "id"
+# db = "ijzp-q8t2"; outdir = "test-crime" ; useaskey = "id"
+# db = "4ijn-s7e5"; outdir = "test-food_inspections" ; useaskey = "inspection_id"
+# db = "9ksk-na4q"; outdir = "test-garbage_carts"; useaskey = "service_request_number"
+# db = "me59-5fac"; outdir = "test-sanitation_code"; useaskey = "service_request_number"
+```
+
+
+```{r}
+##------------------------------------------------------------------------------
+## hurl.it EXAMPLES
+##------------------------------------------------------------------------------
+
+## Destination
+#  GET                  | https://data.cityofchicago.org/resource/r5kz-chrr.csv
+## Header
+#  X-App-Token          | bjp8KrRvAPtuf809u1UXnI0Z8
+## Params
+#   application_type    | RENEW
+#   license_description | Limited Business License
+#   $limit:             | 20
+
+## The query detail has all this:
+## HEADERS:
+##   Accept: */*
+##   Accept-Encoding: gzip, deflate
+##   User-Agent: runscope/0.1
+##   X-App-Token: bjp8KrRvAPtuf809u1UXnI0Z8
+## QUERYSTRING
+##   $limit: 20
+##   application_type: RENEW
+##   license_description: Limited Business License
+
+## Destination
+#  GET                  | https://data.fortworthtexas.gov/resource/i85s-46fv.json
+## Header
+#  X-App-Token          | bjp8KrRvAPtuf809u1UXnI0Z8
+## Params
+#   $where              | codate >= '2014-07-01' AND codate<'2014-07-31'
+
+
+```
+
+
+```{r}
+## This is how to get a count and a group by
+paste0("https://data.cityofchicago.org/resource/r5kz-chrr.json?$","
+       select=application_type,COUNT(application_type)&$group=application_type")
+```
+
+
+```{r}
+##------------------------------------------------------------------------------
+## DIRECT URL EXAMPLES
+## SINGLE WHERE QUERIES
+##------------------------------------------------------------------------------
+
+# https://data.cityofchicago.org/resource/r5kz-chrr.json?$where=application_type="RENEW"
+# https://data.cityofchicago.org/resource/r5kz-chrr.json?application_type="RENEW"
+
+# https://data.fortworthtexas.gov/resource/i85s-46fv.json?$where=codate >= '2014-07-01'
+# https://data.cityofchicago.org/resource/r5kz-chrr.csv?$limit=20&application_type="RENEW"
+## Note, socrata will add a $ in front of "application_type".  That is as soon as you put the URL
+## above into a browser, it will be instantly tranformed into this:
+## https://data.cityofchicago.org/resource/r5kz-chrr.csv?$limit=20&$application_type=%22RENEW%22
+## and the download will start.  However, if you submit the query with the $, it will fail.
+
+## URLS based on the above notes...
+urls <- list(
+    
+    ## COC / limit 20 / app_type==RENEW / lic_desc==Limited
+    ## Notes: successful compound query
+    paste0("https://data.cityofchicago.org/resource/r5kz-chrr.csv?",
+           "application_type=RENEW&$limit=20",
+           "&license_description=Limited Business License"),
+    
+    ## COC / limit 20 / app_type==RENEW / lic_desc==Limited
+    ##     / app_date criteria
+    ## Notes: ALWAYS FAILS
+    paste0("https://data.cityofchicago.org/resource/r5kz-chrr.csv?",
+           "application_type=RENEW&$limit=20",
+           "&license_description=Limited Business License",
+           "&application_created_date<'2010-07-01'"),
+    
+    ## COC / limit 20 / app_type==RENEW / lic_desc==Limited
+    ##     / app_date criteria using $where
+    ## Notes: ALWAYS FAILS
+    paste0("https://data.cityofchicago.org/resource/r5kz-chrr.json?",
+           "application_type=RENEW&$limit=20",
+           "&license_description=Limited Business License",
+           "$where=application_date>'2013-07-01'"),
+    
+    ## COC / limit 20 / app_type==RENEW / lic_desc==Limited
+    ##     / app_date criteria using $where and full field name
+    ## Notes: ALWAYS FAILS
+    paste0("https://data.cityofchicago.org/resource/r5kz-chrr.csv?",
+           "application_type=RENEW&$limit=20",
+           "&license_description=Limited Business License",
+           "$where=APPLICATION CREATED DATE>'2013-07-01'"),
+    
+    ## Texas / JSON / date criteria
+    ## Notes: Works
+    paste0("https://data.fortworthtexas.gov/resource/i85s-46fv.json?",
+           "$where=codate<='2001-07-27'"),
+    
+    
+    ## Texas / CSV / date criteria
+    ## Notes: Works
+    paste0("https://data.fortworthtexas.gov/resource/i85s-46fv.csv?",
+           "$where=codate<='2001-07-27'"),
+    
+    ## Texas / two date criteria
+    ## Notes: FAILS
+    paste0("https://data.fortworthtexas.gov/resource/i85s-46fv.json?",
+           "$where=codate >= '2014-07-01' AND codate < '2014-07-31'"),
+    
+    ## Simlar to 1, but json
+    paste0("https://data.cityofchicago.org/resource/r5kz-chrr.json?",
+           "application_type=RENEW&$limit=20&",
+           "license_description=Limited Business License"),
+    
+    ## Simlar to 8, but adding in app token
+    paste0("https://data.cityofchicago.org/resource/r5kz-chrr.json?",
+           "$$app_token=bjp8KrRvAPtuf809u1UXnI0Z8&",
+           "application_type=RENEW&$limit=20&",
+           "license_description=Limited Business License")
+    )
+
+
+if(FALSE){
+    ## Print URLs for convenience:
+    unlist(urls)
+    
+    httr::parse_url(urls[[5]])
+        
+    df <- read.table(urls[[1]], sep=",", stringsAsFactors=FALSE, header=TRUE); str(df)
+    df <- read.table(urls[[2]], sep=",", stringsAsFactors=FALSE, header=TRUE); str(df)
+    df <- read.table(urls[[3]], sep=",", stringsAsFactors=FALSE, header=TRUE); str(df)
+    df <- read.table(urls[[4]], sep=",", stringsAsFactors=FALSE, header=TRUE); str(df)
+    df <- read.table(urls[[5]], sep=",", stringsAsFactors=FALSE, header=TRUE); str(df)
+    df <- read.table(urls[[6]], sep=",", stringsAsFactors=FALSE, header=TRUE); str(df)
+    df <- read.table(urls[[7]], sep=",", stringsAsFactors=FALSE, header=TRUE); str(df)
+    
+    readLines(urls[[1]])
+    readLines(urls[[2]])
+    readLines(urls[[3]])
+    readLines(urls[[4]])
+    readLines(urls[[5]])
+    readLines(urls[[6]])
+    readLines(urls[[7]])
+    
+    ## Uneven lengths
+    urls[[5]]
+    jdat <- httr::content(httr::GET(urls[[5]]))
+    str(jdat)
+    sapply(jdat, length)
+    
+    ## Same query, but with CSV...
+    urls[[6]]
+    cdat <- httr::content(httr::GET(urls[[6]]))
+    str(cdat)
+    geneorama::NAsummary(cdat)
+    
+    smallest_jdat <- which.min(sapply(jdat, length))
+    largest_jdat <- which.max(sapply(jdat, length))
+    jdat[[smallest_jdat]]
+    jdat[[largest_jdat]]
+    
+    cdat[c(smallest_jdat, largest_jdat), ]
+    # geneorama::clipper(cdat[c(smallest_jdat, largest_jdat), ])
+    # geneorama::wtf(unlist_irregular_byname(jdat))
+    
+    sort(data.table::as.IDate(cdat$CoIssDate, "%m/%d/%Y"))
+    
+    str(httr::content(httr::GET(urls[[6]])))
+    str(httr::GET(urls[[5]]))
+    str(httr::content(httr::GET(urls[[7]])))
+    str(httr::GET(urls[[7]]))
+    
+}
+
+```
+
+
+```{r}
+## Gets time out error?
+dat <- httr::GET("https://data.cityofchicago.org/resource/r5kz-chrr.csv?$limit=20&application_type='RENEW'")
+str(dat)
+
+httr::GET("http://google.com/", path = "search", query = list(q = "ham"))
+
+str(httr::content(httr::GET(
+    paste0(
+    "https://data.cityofchicago.org/resource/r5kz-chrr.csv",
+	"$limit=20",
+	"&application_type='RENEW'") )))
+str(httr::content(httr::GET("http://google.com/", path = "search", query = list(q = "ham"))))
+
+
+
+dat <- httr::GET("https://data.cityofchicago.org/resource/r5kz-chrr.csv?$limit=20&application_type='RENEW'")
+
+```
+
+
+```{r}
+##------------------------------------------------------------------------------
+## CONSTRUCTING EXAMPLES
+##------------------------------------------------------------------------------
+
+## This does work:
+df <- httr::GET(url = "https://data.cityofchicago.org/resource/r5kz-chrr.csv", 
+                config = add_headers(c(`$limit`="10")))
+str(content(df))
+
+## Same, add verbose
+df <- httr::GET(url = "https://data.cityofchicago.org/resource/r5kz-chrr.csv", 
+                config = add_headers(c(`$limit`="10")),
+                verbose())
+str(content(df))
+
+```
+
+
+```{r}
+##------------------------------------------------------------------------------
+## CONSTRUCTING EXAMPLES (bus lic)
+##------------------------------------------------------------------------------
+url_bus <- build_url(structure(
+    list(scheme = "http",
+         hostname = "data.cityofchicago.org",
+         port = 80,
+         path = "resource/r5kz-chrr.csv",
+         query = list(`$limit` = "100",
+                      application_type = "RENEW"),
+         params = NULL,
+         fragment = NULL,
+         username = NULL,
+         password = NULL),
+    class = "url"))
+url_bus
+
+# httr::GET(url = url_bus, 
+#           config = add_headers(c(limit=10)),
+#           verbose())
+dat <- httr::GET(url = url_bus)
+dat
+str(content(dat))
+
+```
+
+```{r}
+##------------------------------------------------------------------------------
+## CONSTRUCTING EXAMPLES (bus lic)
+##------------------------------------------------------------------------------
+url_bus <- build_url(structure(
+    list(scheme = "http",
+         hostname = "data.cityofchicago.org",
+         port = 80,
+         path = "resource/r5kz-chrr.csv",
+         query = list(`$limit` = "100",
+                      application_type = "RENEW"),
+         params = NULL,
+         fragment = NULL,
+         username = NULL,
+         password = NULL),
+    class = "url"))
+url_bus
+
+# httr::GET(url = url_bus, 
+#           config = add_headers(c(limit=10)),
+#           verbose())
+dat <- httr::GET(url = url_bus)
+dat
+str(content(dat))
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
+##------------------------------------------------------------------------------
+## BUILD AND PARSE URLS
+##------------------------------------------------------------------------------
+
+parse_url("http://google.com/")
+parse_url("http://google.com:80/")
+parse_url("http://google.com:80/?a=1&b=2")
+
+build_url(parse_url("http://google.com/"))
+str(parse_url("http://google.com/"))
+
+build_url(structure(
+    list(scheme = "http",
+         hostname = "google.com",
+         port = 80,
+         path = NULL,
+         query = list(a = "1",
+                      b = "2"),
+         params = NULL,
+         fragment = NULL,
+         username = NULL,
+         password = NULL),
+    class = "url"))
+
+build_url(structure(
+    list(scheme = "http",
+         hostname = "google.com",
+         port = 80,
+         path = NULL,
+         query = list(a = "1",
+                      b = "2"),
+         fragment = NULL,
+         username = NULL,
+         password = NULL),
+    class = "url"))
+
+build_url(structure(
+    list(scheme = "http",
+         hostname = "google.com",
+         port = NULL,
+         path = "myresource",
+         query = list(a = "1",b = "2"),
+         params = list(FOOOOO="zzz=1", BARRRR="yyyyy=2"),
+         fragment = NULL),
+    class = "url"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
